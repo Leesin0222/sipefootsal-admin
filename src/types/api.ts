@@ -102,12 +102,46 @@ export interface SettlementResponse {
   createdAt: string;
 }
 
+/** 백엔드 Badge.BadgeCategory 와 동일 */
+export type BadgeCategory =
+  | "COHORT_PARTICIPATION"
+  | "CONSECUTIVE_PARTICIPATION"
+  | "COMMEMORATIVE"
+  | "LEVEL_UPGRADE"
+  | "SPECIAL_EVENT";
+
+/** 백엔드 Badge.BadgeGrade 와 동일 */
+export type BadgeGrade =
+  | "BRONZE"
+  | "SILVER"
+  | "GOLD"
+  | "PLATINUM"
+  | "DIAMOND"
+  | "LEGENDARY";
+
+export const BADGE_CATEGORY_LABELS: Record<BadgeCategory, string> = {
+  COHORT_PARTICIPATION: "기수 참여",
+  CONSECUTIVE_PARTICIPATION: "연속 참여",
+  COMMEMORATIVE: "기념",
+  LEVEL_UPGRADE: "레벨 업그레이드",
+  SPECIAL_EVENT: "특별 이벤트",
+};
+
+export const BADGE_GRADE_LABELS: Record<BadgeGrade, string> = {
+  BRONZE: "브론즈",
+  SILVER: "실버",
+  GOLD: "골드",
+  PLATINUM: "플래티넘",
+  DIAMOND: "다이아몬드",
+  LEGENDARY: "레전더리",
+};
+
 export interface BadgeResponse {
   id: number;
   name: string;
   description: string;
-  category: string;
-  grade: string;
+  category: BadgeCategory | string;
+  grade: BadgeGrade | string;
   imageUrl?: string;
   active: boolean;
   createdAt: string;

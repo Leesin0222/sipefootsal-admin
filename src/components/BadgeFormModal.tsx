@@ -12,7 +12,8 @@ import {
   Select,
   VStack,
 } from "@chakra-ui/react";
-import type { BadgeResponse } from "@/types/api";
+import type { BadgeResponse, BadgeCategory, BadgeGrade } from "@/types/api";
+import { BADGE_CATEGORY_LABELS, BADGE_GRADE_LABELS } from "@/types/api";
 
 interface BadgeFormModalProps {
   isOpen: boolean;
@@ -90,19 +91,27 @@ export function BadgeFormModal({
               <FormLabel>카테고리</FormLabel>
               <Select
                 name="category"
-                defaultValue={initial?.category ?? "COHORT"}
+                defaultValue={initial?.category ?? "COHORT_PARTICIPATION"}
               >
-                <option value="COHORT">기수</option>
-                <option value="STREAK">연속 참여</option>
-                <option value="SPECIAL">기념</option>
+                {(Object.entries(BADGE_CATEGORY_LABELS) as [BadgeCategory, string][]).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  )
+                )}
               </Select>
             </FormControl>
             <FormControl isRequired>
               <FormLabel>등급</FormLabel>
-              <Select name="grade" defaultValue={initial?.grade ?? "BASIC"}>
-                <option value="BASIC">기본</option>
-                <option value="SILVER">실버</option>
-                <option value="GOLD">골드</option>
+              <Select name="grade" defaultValue={initial?.grade ?? "BRONZE"}>
+                {(Object.entries(BADGE_GRADE_LABELS) as [BadgeGrade, string][]).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  )
+                )}
               </Select>
             </FormControl>
             <FormControl>

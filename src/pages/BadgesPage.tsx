@@ -24,6 +24,7 @@ import {
 } from "@/api/badges";
 import { BadgeFormModal } from "@/components/BadgeFormModal";
 import type { BadgeResponse } from "@/types/api";
+import { BADGE_CATEGORY_LABELS, BADGE_GRADE_LABELS } from "@/types/api";
 
 export function BadgesPage() {
   const [editing, setEditing] = useState<BadgeResponse | null>(null);
@@ -67,6 +68,18 @@ export function BadgesPage() {
         queryClient.invalidateQueries({ queryKey: ["badges"] });
       } else toast({ title: r.message || "실패", status: "error" });
     },
+    onError: (err: { response?: { status: number }; message?: string }) => {
+      if (err.response?.status === 404) {
+        setEditing(null);
+        queryClient.invalidateQueries({ queryKey: ["badges"] });
+        toast({
+          title: "뱃지가 삭제되었거나 존재하지 않습니다. 목록을 새로고침했습니다.",
+          status: "warning",
+        });
+      } else {
+        toast({ title: (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? "수정에 실패했습니다.", status: "error" });
+      }
+    },
   });
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteBadge(id),
@@ -87,7 +100,13 @@ export function BadgesPage() {
     },
   });
 
-  const badges: BadgeResponse[] = res?.data ?? [];
+  // 백엔드가 Page<Badge> 반환 시 data.content, 배열 반환 시 data 그대로 사용
+  const raw = res?.data;
+  const badges: BadgeResponse[] = Array.isArray(raw)
+    ? raw
+    : (raw && typeof raw === "object" && "content" in raw
+        ? (raw as { content: BadgeResponse[] }).content
+        : []);
 
   return (
     <Box>
@@ -117,8 +136,8 @@ export function BadgesPage() {
                 <Tr key={b.id}>
                   <Td>{b.name}</Td>
                   <Td>{b.description}</Td>
-                  <Td>{b.category}</Td>
-                  <Td>{b.grade}</Td>
+                  <Td>{BADGE_CATEGORY_LABELS[b.category as keyof typeof BADGE_CATEGORY_LABELS] ?? b.category}</Td>
+                  <Td>{BADGE_GRADE_LABELS[b.grade as keyof typeof BADGE_GRADE_LABELS] ?? b.grade}</Td>
                   <Td>{b.active ? "Y" : "N"}</Td>
                   <Td>
                     <HStack spacing={2}>

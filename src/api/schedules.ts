@@ -61,9 +61,12 @@ export async function getSchedulesDateRange(
   dateFrom: string,
   dateTo: string
 ): Promise<ApiResponse<ScheduleResponse[]>> {
+  // 백엔드는 startDate, endDate (ISO DATE_TIME) 사용
+  const startDate = dateFrom.includes("T") ? dateFrom : `${dateFrom}T00:00:00`;
+  const endDate = dateTo.includes("T") ? dateTo : `${dateTo}T23:59:59`;
   const { data } = await apiClient.get<ApiResponse<ScheduleResponse[]>>(
     "/api/schedules/date-range",
-    { params: { dateFrom, dateTo } }
+    { params: { startDate, endDate } }
   );
   return data;
 }
